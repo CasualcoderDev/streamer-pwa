@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Streamer</title>
+    <!-- System Fonts for macOS look -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
+    <!-- Phosphor Icons for UI elements -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1c1c1e">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <!-- Plyr CSS -->
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+</head>
+
+<body>
+    <!-- Abstract Ambient Background -->
+    <div class="ambient-background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="app-container">
+
+        <!-- Input View (Default) -->
+        <main class="glass-panel" id="input-view">
+            <header>
+                <div class="logo">
+                    <i class="ph ph-play-circle logo-icon"></i>
+                    <h1>Streamer</h1>
+                </div>
+                <p>Paste a direct video URL to play instantly.</p>
+            </header>
+
+            <div class="input-group">
+                <i class="ph ph-link input-icon"></i>
+                <input type="url" id="video-url-input" placeholder="https://example.com/video.mp4" autocomplete="off"
+                    spellcheck="false">
+                <button id="paste-btn" class="icon-btn" title="Paste from clipboard">
+                    <i class="ph ph-clipboard"></i>
+                </button>
+            </div>
+
+            <button id="play-btn" class="primary-btn" disabled>
+                <i class="ph-fill ph-play"></i> Watch Stream
+            </button>
+
+            <div class="supported-formats">
+                <span>MP4</span>
+                <span>MKV</span>
+                <span>WebM</span>
+                <span>HLS/M3U8</span>
+            </div>
+            <!-- PWA Install Button (Hidden until supported) -->
+            <button id="install-btn" class="action-btn hidden" style="margin-top: 20px;">
+                <i class="ph ph-download-simple"></i>
+                Install App
+            </button>
+
+            <!-- GitHub Repo Link -->
+            <a href="https://github.com/CasualcoderDev/streamer-pwa" target="_blank" rel="noopener noreferrer"
+                class="github-link" title="View Source on GitHub">
+                <i class="ph ph-github-logo"></i>
+            </a>
+        </main>
+
+        <!-- Player View (Hidden intially) -->
+        <div class="player-container hidden" id="player-view">
+            <div class="player-header glass-toolbar">
+                <button id="back-btn" class="icon-btn" title="Back to menu">
+                    <i class="ph ph-arrow-left"></i>
+                </button>
+                <h2 id="now-playing-title" class="truncate">Playing Stream</h2>
+                <div class="header-actions">
+                    <button id="download-btn" class="icon-btn" title="Download Video">
+                        <i class="ph ph-download"></i>
+                    </button>
+                    <button id="stats-btn" class="icon-btn" title="Stats for nerds">
+                        <i class="ph ph-chart-bar"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="video-wrapper relative-wrapper">
+                <!-- Advanced Video Player using Plyr -->
+                <video id="main-player" playsinline crossorigin>
+                    <!-- Source added dynamically via JS -->
+                    Your browser does not support the video tag.
+                </video>
+
+                <!-- Visual Buffering UI -->
+                <div id="buffering-ui" class="buffering-overlay hidden">
+                    <div class="spinner"></div>
+                    <div class="buffering-text">
+                        <span>Buffering...</span>
+                        <span id="slow-load-warning" class="hidden"
+                            style="color: var(--accent-light); font-size: 12px; margin-top: 8px; text-align: center;">Extracting
+                            Large File Index...<br>This may take a minute.</span>
+                    </div>
+                </div>
+
+                <!-- Error UI -->
+                <div id="error-ui" class="buffering-overlay hidden" style="background: rgba(20, 5, 5, 0.9);">
+                    <i class="ph ph-warning-circle" style="font-size: 48px; color: #ff4b4b; margin-bottom: 8px;"></i>
+                    <div class="buffering-text" style="color: #ff4b4b;">
+                        <span style="font-size: 18px; font-weight: 600;">Playback Error</span>
+                        <span id="error-message"
+                            style="color: rgba(255,255,255,0.7); font-size: 13px; margin-top: 8px; text-align: center; max-width: 80%;">Failed
+                            to load video stream.</span>
+                    </div>
+                </div>
+
+                <!-- Comprehensive Stats for Nerds Panel -->
+                <div id="advanced-stats-panel" class="stats-glass">
+                    <div class="stats-header">
+                        <h3>Stats for Nerds</h3>
+                        <button id="close-stats-btn" class="icon-btn-small">
+                            <i class="ph ph-x"></i>
+                        </button>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Connection</span>
+                            <span id="health-stat" class="health-indicator"><span class="dot"></span><span
+                                    class="text">Checking</span></span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Download Speed</span>
+                            <span id="speed-stat" class="stat-value">0 MB/s</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Resolution</span>
+                            <span id="resolution-stat" class="stat-value">Auto</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Video Codec</span>
+                            <span id="codec-stat" class="stat-value">Unknown</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Bitrate</span>
+                            <span id="bitrate-stat" class="stat-value">Unknown</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Framerate</span>
+                            <span id="fps-stat" class="stat-value">Unknown</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Cache Strategy</span>
+                            <span id="cache-stat" class="stat-value">Service Worker Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HLS.js (for adaptive streaming) -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+    <!-- Plyr JS -->
+    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+
+    <script src="script.js"></script>
+
+    <!-- Register Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>
