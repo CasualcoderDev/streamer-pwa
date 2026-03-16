@@ -66,17 +66,16 @@
                 <span>WebM</span>
                 <span>HLS/M3U8</span>
             </div>
-            <!-- PWA Install Button (Hidden until supported) -->
-            <button id="install-btn" class="action-btn hidden" style="margin-top: 20px;">
-                <i class="ph ph-download-simple"></i>
-                Install App
-            </button>
-
-            <!-- GitHub Repo Link -->
-            <a href="https://github.com/CasualcoderDev/streamer-pwa" target="_blank" rel="noopener noreferrer"
-                class="github-link" title="View Source on GitHub">
-                <i class="ph ph-github-logo"></i>
-            </a>
+            <!-- GitHub Repo Link + Install App icon — bottom right corner -->
+            <div class="corner-actions">
+                <button id="install-btn" class="corner-icon-btn hidden" title="Install App">
+                    <i class="ph ph-device-mobile"></i>
+                </button>
+                <a href="https://github.com/CasualcoderDev/streamer-pwa" target="_blank" rel="noopener noreferrer"
+                    class="corner-icon-btn" title="View Source on GitHub">
+                    <i class="ph ph-github-logo"></i>
+                </a>
+            </div>
         </main>
 
         <!-- Player View (Hidden intially) -->

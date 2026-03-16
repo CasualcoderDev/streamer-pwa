@@ -284,25 +284,41 @@ input[type="url"]::placeholder {
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* --- GitHub Link --- */
-.github-link {
+/* --- Corner Actions (Install + GitHub icon cluster) --- */
+.corner-actions {
     position: absolute;
     bottom: 20px;
-    right: 24px;
+    right: 20px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.corner-icon-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-secondary);
-    font-size: 28px;
-    transition: all 0.3s ease;
+    font-size: 20px;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.25s ease;
     text-decoration: none;
-    opacity: 0.6;
+    opacity: 0.8;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
-.github-link:hover {
+.corner-icon-btn:hover {
     color: var(--text-primary);
     opacity: 1;
-    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
 }
 
 /* --- Player View --- */
